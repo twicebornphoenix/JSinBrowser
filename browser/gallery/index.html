@@ -35,5 +35,28 @@
       </ul>
     </div>
   </article>
+
+  <script>
+    'use strict';
+
+    let current = document.getElementById('currentPhoto');
+    
+    const images = ['i/breuer-building.jpg', 'i/guggenheim-museum.jpg', 'i/headquarters.jpg', 'i/IAC.jpg', 'i/new-museum.jpg'];
+    const next = document.getElementById('nextPhoto');
+    const prev = document.getElementById('prevPhoto');
+
+    let i = 0;
+    next.onclick = function() {
+      current.src = images[i];
+      i++;
+      if (i > images.length - 1) i = 0;
+    }
+
+    prev.onclick = function() {
+      current.src = images[i];
+      i--;
+      if (i < 0) i = images.length - 1;
+    }
+  </script>
 </body>
 </html>
