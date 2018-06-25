@@ -16,7 +16,7 @@
     </p>
 
     <div class="article-gallery">
-      <img id="currentPhoto" src="i/spinner.gif" alt="">
+      <img id="currentPhoto" src="i/breuer-building.jpg" alt="">
       <button id="prevPhoto">Назад</button>
       <button id="nextPhoto">Вперед</button>
     </div>
@@ -45,17 +45,17 @@
     const next = document.getElementById('nextPhoto');
     const prev = document.getElementById('prevPhoto');
 
-    let i = 0;
+    var i = 0;
     next.onclick = function() {
-      current.src = images[i];
       i++;
       if (i > images.length - 1) i = 0;
+      current.src = images[i];
     }
 
     prev.onclick = function() {
-      current.src = images[i];
       i--;
       if (i < 0) i = images.length - 1;
+      current.src = images[i];
     }
   </script>
 </body>
