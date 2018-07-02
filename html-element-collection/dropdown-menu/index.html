@@ -16,4 +16,12 @@
     </ul>
   </div>
 </body>
+<script>
+  'use strict';
+  const menu = document.getElementsByClassName('wrapper-dropdown');
+  function changeMenuState() {
+    menu[0].classList.toggle('active');
+  }
+  menu[0].onclick = changeMenuState;
+</script>
 </html>
