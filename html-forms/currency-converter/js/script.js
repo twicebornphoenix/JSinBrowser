@@ -34,8 +34,11 @@ function imitation() {
 }
 
 function showResult() {
-	output.value = type.value;
+	let x = data.find(obj => obj.code === from.value);
+	let y = data.find(obj => obj.code === to.value);
+	output.value = (type.value * (x.value/y.value)).toFixed(2);
 }
+
 
 require.addEventListener('load', getData);
 type.addEventListener('input', showResult);
