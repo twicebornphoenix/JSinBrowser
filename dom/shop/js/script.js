@@ -7,5 +7,5 @@ function addItem() {
 	let totalPrice = document.getElementById('cart-total-price');
 
 	itemsIn.textContent = +itemsIn.textContent + 1;
-	totalPrice.textContent = +totalPrice.textContent + this.dataset.price;
+	totalPrice.textContent = +totalPrice.textContent + +this.dataset.price;
 }
