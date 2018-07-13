@@ -20,6 +20,7 @@ main {
 
 main p,
 main h2,
+main h3,
 main address {
   margin-left: 30px;
   margin-right: 30px;
