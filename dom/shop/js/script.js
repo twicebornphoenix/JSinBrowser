@@ -1,11 +1,19 @@
 const btns = Array.from(document.querySelectorAll('.add'));
+let totalPrice = document.getElementById('cart-total-price');
+let price = +totalPrice.textContent;
 
-btns.forEach(btn => btn.addEventListener('click', addItem));
-
-function addItem() {
+function addItem(event) {
 	let itemsIn = document.getElementById('cart-count');
-	let totalPrice = document.getElementById('cart-total-price');
 
 	itemsIn.textContent = +itemsIn.textContent + 1;
-	totalPrice.textContent = +totalPrice.textContent + +this.dataset.price;
+	getTotalPrice(event.target);
 }
+
+function getTotalPrice(target) {
+	price = price + +target.dataset.price;
+
+	totalPrice.textContent = getPriceFormatted(price);
+}
+
+
+btns.forEach(btn => btn.addEventListener('click', addItem));
