@@ -1,16 +1,19 @@
 const btns = Array.from(document.querySelectorAll('.add'));
-
-btns.forEach(btn => btn.addEventListener('click', addItem));
+let totalPrice = document.getElementById('cart-total-price');
+let price = +totalPrice.textContent;
 
 function addItem(event) {
 	let itemsIn = document.getElementById('cart-count');
+
 	itemsIn.textContent = +itemsIn.textContent + 1;
-	getTotalPrice(event);
+	getTotalPrice(event.target);
 }
-	
-function getTotalPrice(event) {	
-	let totalPrice = document.getElementById('cart-total-price');
-	let btn = event.target;
-	let price = +totalPrice.textContent + +btn.dataset.price;
+
+function getTotalPrice(target) {
+	price = price + +target.dataset.price;
+
 	totalPrice.textContent = getPriceFormatted(price);
 }
+
+
+btns.forEach(btn => btn.addEventListener('click', addItem));
