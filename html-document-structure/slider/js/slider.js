@@ -3,37 +3,65 @@ const slides = Array.from(document.querySelectorAll('.slides > .slide'));
 const btns = Array.from(document.querySelectorAll('.slider-nav > a'));
 
 let index = 0;
-let currentSlide = slides[index];
-currentSlide.classList.add('slide-current');
+slides[0].classList.add('slide-current');
+btns.forEach(btn => {
+	if (btn.dataset.action === 'prev' || btn.dataset.action === 'first') btn.classList.add('disabled');
+});
+
+function changeBtnStatus() {
+	if (slides[index].nextElementSibling && slides[index].previousElementSibling) {
+		btns.forEach(btn => {
+			btn.classList.remove('disabled');
+		});
+	} else if (!slides[index].nextElementSibling && slides[index].previousElementSibling) {
+		btns.forEach(btn => {
+			if (btn.dataset.action === 'next' || btn.dataset.action === 'last') {
+				btn.classList.add('disabled');	
+			} else {
+				btn.classList.remove('disabled');
+			}
+		});
+	} else if (!slides[index].previousElementSibling && slides[index].nextElementSibling) {
+		btns.forEach(btn => {
+			if (btn.dataset.action === 'prev' || btn.dataset.action === 'first') {
+				btn. classList.add('disabled');
+			} else {
+				btn.classList.remove('disabled');
+			}
+		});
+	}
+}
 
 function changeSlide(event) {
-	slides.forEach(slide => slide.classList.remove('slide-current'));
 	switch(event.target.dataset.action) {
 		case 'next': 
-			if (index === slides.length - 1) {
-				index = 0;
+			if (!slides[index].nextElementSibling) {
+				return;
 			}
-				currentSlide = slides[index++];
-				currentSlide.nextElementSibling.classList.add('slide-current');
+			slides[index].classList.remove('slide-current');
+			++index;
+			slides[index].classList.add('slide-current');
 			break;
 		case 'prev':
-			if (index === 0) {
-				index = slides.length - 1;
+			if (!slides[index].previousElementSibling) {
+				return;
 			}
-				currentSlide = slides[index--];
-				currentSlide.previousElementSibling.classList.add('slide-current');
+			slides[index].classList.remove('slide-current');
+			--index;
+			slides[index].classList.add('slide-current');
 			break;
 		case 'first':
-			currentSlide = slides[0];
-			currentSlide.classList.add('slide-current');
+			slides[index].classList.remove('slide-current');
+			slides[0].classList.add('slide-current');
 			index = 0;
 			break;
 		case 'last':
-			currentSlide = slides[slides.length - 1];
-			currentSlide.classList.add('slide-current');
+			slides[index].classList.remove('slide-current');
+			slides[slides.length - 1].classList.add('slide-current');
 			index = slides.length - 1;
 			break;
 	}
+	changeBtnStatus();
 }
 
 btns.forEach(btn => btn.addEventListener('click', changeSlide));
