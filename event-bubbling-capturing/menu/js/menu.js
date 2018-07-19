@@ -25,6 +25,11 @@ function initLink(node) {
   node.addEventListener('click', openLink);
 }
 
+function showSelected(e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
 Array
   .from(document.querySelectorAll('.dropdown'))
   .forEach(init);
@@ -32,3 +37,9 @@ Array
 Array
   .from(document.querySelectorAll('a'))
   .forEach(initLink);
+
+Array
+  .from(document.querySelectorAll('.dropdown-menu'))
+  .forEach(dropdown => {
+    dropdown.addEventListener('click', showSelected);
+  });

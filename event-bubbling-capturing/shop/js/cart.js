@@ -1,21 +1,11 @@
 'use strict';
 
-const itemsList = document.querySelector('.items-list');
-let addBtns = Array.from(itemsList.querySelectorAll('.add-to-cart'));
-
-function collectAddBtns() {
-	addBtns = Array.from(itemsList.querySelectorAll('.add-to-cart'));
-	setListener();
+function checkTarget(e) {
+		e.preventDefault();
+		if (e.target.className === 'add-to-cart') {
+				addToCart(e.target.dataset);
+		}
 }
 
-function setListener() {
-	addBtns.forEach(btn => btn.addEventListener('click', prepareToAdd));
-}
-
-function prepareToAdd(e) {
-	e.preventDefault();
-	addToCart(e.target.dataset);
-}
-
-showMore.addEventListener('click', collectAddBtns);
-addBtns.forEach(btn => btn.addEventListener('click', prepareToAdd));
+document.querySelector('.items-list')
+		.addEventListener('click', checkTarget);
