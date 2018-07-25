@@ -4,7 +4,7 @@ function showBubbles(target) {
   if (!target || !(target instanceof WebSocket)) {
     return;
   }
-
+  
   let points = [];
 
   target.addEventListener('message', event => {
