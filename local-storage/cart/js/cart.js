@@ -4,24 +4,27 @@ const colorsPlace = document.querySelector('#colorSwatch');
 const sizesPlace = document.querySelector('#sizeSwatch');
 const basketPlace = document.querySelector('#quick-cart');
 const addToBasket = document.querySelector('#AddToCartForm');
+const thumbs = Array.from(document.querySelectorAll('.thumb-image'));
 
 function setActualData() {
-    if (!localStorage.length) {
-        getColors();
-        getSizes();
-    }
+    getColors('https://neto-api.herokuapp.com/cart/colors');
+    getSizes('https://neto-api.herokuapp.com/cart/sizes');
 }
 
-function getColors() {
+
+function getColors(target) {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'https://neto-api.herokuapp.com/cart/colors', true);
+    xhr.open('GET', target, true);
     xhr.send();
     xhr.addEventListener('load', setColors);
 }
 
 function setColors(e) {
-    let res = JSON.parse(e.target.responseText);
-
+    let res = localStorage.color ? JSON.parse(localStorage.getItem('color')) : JSON.parse(e.target.responseText);
+    if (!localStorage.color) {
+        let serial = JSON.stringify(res);
+        localStorage.setItem('color', serial);
+    }
     res.forEach(color => {
         let isAvailable = color.isAvailable ? 'available' : 'soldout';
         let isDisabled = color.isAvailable ? '' : 'disabled';
@@ -35,17 +38,36 @@ function setColors(e) {
   </label>
 </div>`;
     });
+    setSelectedInputs(colorsPlace);
 }
 
-function getSizes() {
+function setSelectedInputs(item) {
+    const inputs = item.querySelectorAll('input');
+    if (localStorage.item) {
+    	let x = document.querySelector(`#${localStorage.item}`);
+    	console.log(x)
+    	x.setAttribute('checked', true);
+    }
+    inputs.forEach(input => {
+        input.addEventListener('click', function(e) {
+            localStorage.item = e.target.id;
+        })
+    })
+}
+
+function getSizes(target) {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'https://neto-api.herokuapp.com/cart/sizes', true);
+    xhr.open('GET', target, true);
     xhr.send();
     xhr.addEventListener('load', setSizes);
 }
 
 function setSizes(e) {
-    let res = JSON.parse(e.target.responseText);
+    let res = localStorage.size ? JSON.parse(localStorage.getItem('size')) : JSON.parse(e.target.responseText);
+    if (!localStorage.size) {
+        let serial = JSON.stringify(res);
+        localStorage.setItem('size', serial);
+    }
     res.forEach(size => {
 
         let isAvailable = size.isAvailable ? 'available' : 'soldout';
@@ -58,22 +80,96 @@ function setSizes(e) {
   </label>
 </div>`;
     });
+    setSelectedInputs(sizesPlace);
 }
 
-window.addEventListener('load', setActualData);
-addToBasket.addEventListener('submit', function(e) {
+function getBasket(e) {
     e.preventDefault();
     let color = Array.from(colorsPlace.getElementsByTagName('label')).filter(color => color.control.checked);
     let size = Array.from(sizesPlace.getElementsByTagName('label')).filter(size => size.control.checked);
     if (color.length && size.length) {
-        basketPlace.innerHTML = `<div class="quick-cart-product quick-cart-product-static" id="quick-cart-product-2721888517" style="opacity: 1;">
+        const form = new FormData(e.target);
+        form.append('productId', addToBasket.dataset.productId);
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://neto-api.herokuapp.com/cart', true);
+        xhr.send(form);
+        xhr.addEventListener('load', setBasket);
+    }
+}
+
+function setBasket(e) {
+    const res = JSON.parse(e.target.responseText);
+    res.forEach(obj => {
+        basketPlace.innerHTML = `<div class="quick-cart-product quick-cart-product-static" id="quick-cart-product-${obj.id}" style="opacity: 1;">
   <div class="quick-cart-product-wrap">
-    <img src="https://neto-api.herokuapp.com/hj/3.3/cart/product_1024x1024.png" title="Tony Hunfinger T-Shirt New York">
-    <span class="s1" style="background-color: #000; opacity: .5">$800.00</span>
+    <img src="${obj.pic}" title="${obj.title}">
+    <span class="s1" style="background-color: #000; opacity: .5">$${obj.price}.00</span>
     <span class="s2"></span>
   </div>
-  <span class="count hide fadeUp" id="quick-cart-product-count-2721888517">1</span>
-  <span class="quick-cart-product-remove remove" data-id="2721888517"></span>
+  <span class="count hide fadeUp" id="quick-cart-product-count-${obj.id}">${obj.quantity}</span>
+  <span class="quick-cart-product-remove remove" data-id="${obj.id}"></span>
 </div>`;
-    }
-})
+        basketPlace.innerHTML += `<a id="quick-cart-pay" quickbeam="cart-pay" class="cart-ico open">
+  <span>
+    <strong class="quick-cart-text">Оформить заказ<br></strong>
+    <span id="quick-cart-price">$${obj.price * obj.quantity}.00</span>
+  </span>
+</a>`;
+    })
+    deleteItem();
+}
+
+function deleteItem() {
+    let btn = document.querySelector('.remove');
+    btn.addEventListener('click', function(e) {
+        const form = new FormData();
+        form.append('productId', e.target.dataset.id);
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://neto-api.herokuapp.com/cart/remove', true);
+        xhr.send(form);
+        xhr.addEventListener('load', function() {
+            let res = Array.from(JSON.parse(xhr.responseText));
+            if (res.length) {
+                res.forEach(obj => {
+                    basketPlace.innerHTML = `<div class="quick-cart-product quick-cart-product-static" id="quick-cart-product-${obj.id}" style="opacity: 1;">
+  <div class="quick-cart-product-wrap">
+    <img src="${obj.pic}" title="${obj.title}">
+    <span class="s1" style="background-color: #000; opacity: .5">$${obj.price}.00</span>
+    <span class="s2"></span>
+  </div>
+  <span class="count hide fadeUp" id="quick-cart-product-count-${obj.id}">${obj.quantity}</span>
+  <span class="quick-cart-product-remove remove" data-id="${obj.id}"></span>
+</div>`;
+                    basketPlace.innerHTML += `<a id="quick-cart-pay" quickbeam="cart-pay" class="cart-ico open">
+  <span>
+    <strong class="quick-cart-text">Оформить заказ<br></strong>
+    <span id="quick-cart-price">$${obj.price * obj.quantity}.00</span>
+  </span>
+</a>`;
+                })
+                deleteItem();
+            } else {
+                document.querySelector('#quick-cart-pay').classList.remove('open');
+                basketPlace.innerHTML = '';
+            }
+        })
+    })
+}
+
+function setBigImage(e) {
+    e.preventDefault();
+    const target = e.target.closest('a');
+    thumbs.forEach(thumb => {
+        thumb.classList.remove('active');
+    })
+    target.classList.add('active');
+    let url = target.href;
+    const bigImage = document.getElementById('big-image');
+    bigImage.style.backgroundImage = `url('${url}')`;
+}
+
+window.addEventListener('load', setActualData);
+thumbs.forEach(thumb => {
+    thumb.addEventListener('click', setBigImage);
+});
+addToBasket.addEventListener('submit', getBasket);
