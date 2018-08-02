@@ -2,10 +2,7 @@
 
 function showComments(list) {
     const commentsContainer = document.querySelector('.comments');
-    console.log(commentsContainer)
     const comments = document.createDocumentFragment();
-
-    console.log(list, comments)
     
     list.forEach(c => {
         comments.appendChild(createComment(c));
@@ -13,25 +10,6 @@ function showComments(list) {
 
     commentsContainer.appendChild(comments);
 }
-// function createComment(comment) {
-//   return `<div class="comment-wrap">
-//     <div class="photo" title="${comment.author.name}">
-//       <div class="avatar" style="background-image: url('${comment.author.pic}')"></div>
-//     </div>
-//     <div class="comment-block">
-//       <p class="comment-text">
-//         ${comment.text.split('\n').join('<br>')}
-//       </p>
-//       <div class="bottom-comment">
-//         <div class="comment-date">${new Date(comment.date).toLocaleString('ru-Ru')}</div>
-//         <ul class="comment-actions">
-//           <li class="complain">Пожаловаться</li>
-//           <li class="reply">Ответить</li>
-//         </ul>
-//       </div>
-//     </div>
-//   </div>`
-// }
 
 function createComment(comment) {
     const element = document.createElement('div');
@@ -44,6 +22,7 @@ function createComment(comment) {
     const actionList = document.createElement('ul');
     const complainItem = document.createElement('li');
     const replyItem = document.createElement('li');
+    const fragment = document.createDocumentFragment();
 
     element.className = 'comment-wrap';
     photoBlock.className = 'photo';
@@ -61,19 +40,23 @@ function createComment(comment) {
     complainItem.textContent = 'Пожаловаться';
     replyItem.textContent = 'Ответить';
 
-    let msg =  comment.text.split('\n').join("<br>");
-    let msgResult = msg.replace(/<h1>/gi, '<xmp><h1>').replace(/<\/h1><br>/gi, '</h1>\n').replace(/<\/blockquote>/gi, '</blockquote></xmp>');
+    let msg =  comment.text.split('\n');
+
+    if (msg.length > 1) {
+      for (let i = 0; i < msg.length - 1; i++) {
+        msg[i] ? fragment.append(msg[i], document.createElement('br')) : fragment.append(document.createElement('br'));
+      }
+    } else {
+      commentText.append(msg);
+    }
     
-    commentText.innerHTML = msgResult;
-    console.log(msgResult)
+    commentText.appendChild(fragment)
 
     element.appendChild(photoBlock);
     element.appendChild(commentBlock);
 
     commentBlock.appendChild(commentText);
     commentBlock.appendChild(commentBottom);
-
-    // commentText.appendChild(getMsg(comment));
 
     photoBlock.appendChild(photoAvatar);
 
@@ -83,7 +66,6 @@ function createComment(comment) {
     actionList.appendChild(complainItem);
     actionList.appendChild(replyItem);
 
-      console.log(element)
     return element;
 }
 
