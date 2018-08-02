@@ -61,8 +61,11 @@ function createComment(comment) {
     complainItem.textContent = 'Пожаловаться';
     replyItem.textContent = 'Ответить';
 
-    commentText.innerHTML = comment.text.split('\n').join("<br />");
-      console.log(commentText, commentText.innerHTML)
+    let msg =  comment.text.split('\n').join("<br>");
+    let msgResult = msg.replace(/<h1>/gi, '<xmp><h1>').replace(/<\/h1><br>/gi, '</h1>\n').replace(/<\/blockquote>/gi, '</blockquote></xmp>');
+    
+    commentText.innerHTML = msgResult;
+    console.log(msgResult)
 
     element.appendChild(photoBlock);
     element.appendChild(commentBlock);
