@@ -116,12 +116,3 @@ function createRowTempl(data) {
 
 form.addEventListener('change', getData);
 showSheme.addEventListener('click', setData);
-
-
-
-
-
-
-
-
-
