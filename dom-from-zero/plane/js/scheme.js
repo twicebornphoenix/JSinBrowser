@@ -1,5 +1,5 @@
 'use strict'
-//элементы, с которыми будем работать
+//константы, с которыми будем работать
 const form = document.querySelector('.form-inline');
 const select = form.querySelector('select');
 const showSheme = form.querySelector('#btnSeatMap');
@@ -7,13 +7,15 @@ const setFull = form.querySelector('#btnSetFull');
 const setEmpty = form.querySelector('#btnSetEmpty');
 const schemeArea = document.querySelector('#seatMapDiv');
 const mapTitle = document.querySelector('#seatMapTitle');
-const mapDiv = document.querySelector('#seatMapDiv');
 const total = document.querySelector('#totalPax');
 const adult = document.querySelector('#totalAdult');
 const half = document.querySelector('#totalHalf');
 
 //переменная с полученными данными
 let currentData;
+
+//переменная с массивом текущих мест
+let currentPlaces;
 
 //деактивируем кнопки Заполнить и Очисить
 setFull.disabled = true;
@@ -70,9 +72,11 @@ function setData(e) {
     }
     mapTitle.textContent = `${currentData.title} (${currentData.passengers} пассажир${passengerWordEnd})`;
     
-    //выводим схему самолёта в интерфес
+    //выводим схему самолёта в интерфейс
     Array.from(schemeArea.children).forEach(child => child.remove());
-    schemeArea.append(rows)
+    schemeArea.append(rows);
+    currentPlaces = Array.from(document.querySelectorAll('.seat'));
+    currentPlaces.forEach(place => place.addEventListener('click', e => manageSeatClasses(e, 'toggle', 'adult')));
 }
 
 //функция определения статуса места в ряду
@@ -193,19 +197,18 @@ function getRow(block) {
 //устанавливаем обработчики событий 
 form.addEventListener('change', getData);
 showSheme.addEventListener('click', setData);
-setFull.addEventListener('click', e => {
+setFull.addEventListener('click', e => manageSeatClasses(e, true, ['adult']));
+setEmpty.addEventListener('click', e => manageSeatClasses(e, false, ['adult', 'half']));
+
+function manageSeatClasses(e, op, cls) {
 	e.preventDefault();
-	Array.from(document.querySelectorAll('.seat'))
-		.forEach(seat => seat.classList.add('adult'));
-});
-setEmpty.addEventListener('click', e => {
-	e.preventDefault();
-	Array.from(document.querySelectorAll('.seat'))
-		.forEach(seat => {
-			seat.classList.remove('adult');
-			seat.classList.remove('half');
-		})
-})
+	if (op === 'toggle') e.target.classList.toggle(cls)
+	currentPlaces.forEach(seat => {
+			op ? seat.classList.add(...cls) : seat.classList.remove(...cls);
+	})
+
+	// seat.classList.toggle(...cls)
+}
 
 console.log('Отправка запроса...')
 
