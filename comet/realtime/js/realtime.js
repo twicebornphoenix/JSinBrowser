@@ -22,7 +22,6 @@ ws.addEventListener('message', event => {
       .map(line => line.split('","').toString().match(reg))
       .forEach(data => realtime.addData([Number(data[1])], data[0]));
       
-
   } else {
     const [label, data] = event.data.match(reg);
     realtime.removeData();
