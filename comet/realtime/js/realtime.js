@@ -14,15 +14,17 @@ const realtime = new Chart(ctx).Bar({
 let isFirst = true;
 const ws = new WebSocket('wss://neto-api.herokuapp.com/realtime');
 ws.addEventListener('message', event => {
+  const reg = /(\d+\:?\d+)/g;
   if (isFirst) {
-    event.data
-      .split('\n')
-      .map(line => line.split('|'))
-      .forEach(data => realtime.addData([Number(data[1])], data[0]));
-
     isFirst = false;
+    event.data
+      .split('},{')
+      .map(line => line.split('","').toString().match(reg))
+      .forEach(data => realtime.addData([Number(data[1])], data[0]));
+      
+
   } else {
-    const [label, data] = event.data.split('|');
+    const [label, data] = event.data.match(reg);
     realtime.removeData();
     realtime.addData([Number(data)], label);
   }
