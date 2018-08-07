@@ -1,6 +1,6 @@
 'use strict';
 
-const ws = new WebSocket('ws://neto-api.herokuapp.com/draw');
+const ws = new WebSocket('wss://neto-api.herokuapp.com/draw');
 ws.binaryType = 'arraybuffer';
 
 ws.addEventListener('open', e => console.log('Соединение открыто'));
