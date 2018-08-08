@@ -71,12 +71,13 @@ function setData(e) {
             passengerWordEnd = 'ов';
     }
     mapTitle.textContent = `${currentData.title} (${currentData.passengers} пассажир${passengerWordEnd})`;
-    
+
     //выводим схему самолёта в интерфейс
     Array.from(schemeArea.children).forEach(child => child.remove());
     schemeArea.append(rows);
     currentPlaces = Array.from(document.querySelectorAll('.seat'));
-    currentPlaces.forEach(place => place.addEventListener('click', e => manageSeatClasses(e, 'toggle', 'adult')));
+    currentPlaces.forEach(place => place.addEventListener('click', e =>
+        manageSeatClasses(e, 'toggle', 'adult')));
 }
 
 //функция определения статуса места в ряду
@@ -85,7 +86,7 @@ function getLetter(row, i) {
         case 6:
             return true;
         case 4:
-        	return i % 5 == 0 ? false : true;
+            return i % 5 == 0 ? false : true;
         case 0:
             return false;
     }
@@ -123,7 +124,7 @@ function getRowObj(row, i) {
                         content: {
                             tag: 'span',
                             cls: 'seat-label',
-                            content: getLetter(row, 1)  ? 'B' : ''
+                            content: getLetter(row, 1) ? 'B' : ''
                         }
                     },
                     {
@@ -189,28 +190,42 @@ function getRow(block) {
     const el = document.createElement(block.tag);
     [].concat(block.cls || []).forEach(className => el.classList.add(className));
 
-    if (block.content) el.appendChild(getRow(block.content))
-    // console.log(el)
+    if (block.content) el.appendChild(getRow(block.content));
+
     return el;
+}
+
+//функция подсчёта занятых мест
+function getAmountPlaces() {
+	adult.textContent = document.querySelectorAll('.adult').length;
+	half.textContent = document.querySelectorAll('.half').length;
+	total.textContent = +adult.textContent + +half.textContent;
 }
 
 //устанавливаем обработчики событий 
 form.addEventListener('change', getData);
 showSheme.addEventListener('click', setData);
-setFull.addEventListener('click', e => manageSeatClasses(e, true, ['adult']));
+setFull.addEventListener('click', e => manageSeatClasses(e, true, 'adult'));
 setEmpty.addEventListener('click', e => manageSeatClasses(e, false, ['adult', 'half']));
 
 function manageSeatClasses(e, op, cls) {
-	e.preventDefault();
-	if (op === 'toggle') e.target.classList.toggle(cls)
-	currentPlaces.forEach(seat => {
-			op ? seat.classList.add(...cls) : seat.classList.remove(...cls);
-	})
+    e.preventDefault();
 
-	// seat.classList.toggle(...cls)
+    if (e.target.classList.contains('seat-label') && op === 'toggle') !e.altKey ?
+        e.target.parentNode.classList.toggle(cls) :
+        e.target.parentNode.classList.toggle('half');
+    if (e.target.classList.contains('seat') && op === 'toggle') !e.altKey ?
+        e.target.classList.toggle(cls) :
+        e.target.classList.toggle('half');
+    if (op !== 'toggle') {
+        currentPlaces.forEach(seat => {
+            op ? seat.classList.add(cls) : seat.classList.remove(...cls);
+        });
+    }
+    getAmountPlaces();
 }
 
-console.log('Отправка запроса...')
+console.log('Отправка запроса...');
 
 //отправляем запрос на сервер при открытии страницы
 fetch('https://neto-api.herokuapp.com/plane/a319')
@@ -221,4 +236,4 @@ fetch('https://neto-api.herokuapp.com/plane/a319')
     .then(json => {
         console.log('Данные получены - ', json);
         currentData = json;
-    })
+    });
