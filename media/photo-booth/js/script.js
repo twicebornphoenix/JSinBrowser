@@ -1,20 +1,20 @@
 'use strict';
-
+//canvas
 const cnvs = document.createElement('canvas');
 const cntx = cnvs.getContext('2d');
-
+//приложение
 const app = document.querySelector('.app')
 const areaForErr = document.querySelector('#error-message');
-
+//медиа
 const audio = app.appendChild(document.createElement('audio'));
 audio.src = './audio/click.mp3';
 const video = app.appendChild(document.createElement('video'))
-
+//управление
 const takePhBtn = document.querySelector('#take-photo');
 const list = document.querySelector('.list');
 const controls = document.querySelector('.controls').style.display = 'block';
 
-//запросить камеру
+//запросить камеру и запустить или вывести сообщение об ошибке
 function reqCam() {
 	navigator.mediaDevices.getUserMedia({video: true, audio: false})
 		.then((stream) => {
@@ -29,16 +29,20 @@ function reqCam() {
 }
 //сделать снимок
 function takePhoto() {
+	//определить высоту и ширину фото
 	cnvs.width = video.videoWidth;
 	cnvs.height = video.videoHeight;
 	cntx.drawImage(video, 0, 0);
-	
+	//проиграть звук фотозатвора
 	audio.play();
 	setToList(cnvs);
 }
 //поместить карточку в разметку
 function setToList(props) {
+	//создать html-разметку фото по шаблону
 	const photo = photoHtml(photoTempl(props));
+	//навесить прослушку кликов по фото и поместить разметку на страницу
+	photo.addEventListener('click', manageClick)
 	list.insertBefore(photo, list.firstElementChild);
 }
 //создать шаблон карточки
@@ -88,7 +92,6 @@ function photoTempl(props) {
 		]
 	}
 }
-
 //создать html-код карточки
 function photoHtml(photo) {
 	//если приходит массив
@@ -101,19 +104,34 @@ function photoHtml(photo) {
 	}
 	//если приходит строка
 	if (typeof photo === 'string') return document.createTextNode(photo)
-	//создаём элемент
+	//создать элемент
 	const el = document.createElement(photo.tag);
 	//присваиваем классы
 	[].concat(photo.cls || []).forEach(className => el.classList.add(className));
-	//присваиваем атрибуты
+	//присвоить атрибуты
 	if (photo.attrs) {
 		Object.keys(photo.attrs).forEach(key => el.setAttribute(key, photo.attrs[key]))
 	}
-	//проверяем, есть ли вложенные элементы
+	//проверить наличие вложенности
 	if (photo.content) el.appendChild(photoHtml(photo.content));
 
 	return list.appendChild(el);
 }
+//обработать клик
+function manageClick(e) {
+	//удалить выбранное фото
+	if (e.target.textContent === 'delete') list.removeChild(e.currentTarget);
+	//загрузить выбранное фото в поток
+	if (e.target.textContent === 'file_upload') {
+
+	}
+}
 //навесить прослушку событий
 window.addEventListener('load', reqCam);
 takePhBtn.addEventListener('click', takePhoto);
+
+
+
+
+
+
