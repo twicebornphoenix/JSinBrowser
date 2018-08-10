@@ -1,21 +1,24 @@
-const wrapper = document.querySelector('.wrapper');
-const pupil = document.querySelector('.big-book__pupil');
-const eye = document.querySelector('.big-book__eye');
+'use strict';
 
-function animate(e) {
-    let offset = eye.getBoundingClientRect();
+window.addEventListener('mousemove', e => {
 
-    let eyeX = (offset.left + 5) + (offset.width / 2);
-    let eyeY = (offset.top) + (offset.height / 2);
-    
-    let cursorX = e.clientX;
-    let cursorY = e.clientY;
+    const eye = document.querySelector('.big-book__eye');
+    const pupil = document.querySelector('.big-book__pupil');
 
-    let radian = Math.atan2(cursorX - eyeX, cursorY - eyeY);
-    let degree = (radian * (180 / Math.PI) * 1);
+    (function getDistance() {
+        const pupilCoords = pupil.getBoundingClientRect();
+        const x1 = pupilCoords['left'] + (pupilCoords['width'] / 2);
+        const y1 = pupilCoords['top'] + (pupilCoords['height'] / 2);
 
-    pupil.style.setProperty('--pupil-x', `${pupil.offsetLeft + pageXOffset}px`);
-    pupil.style.setProperty('--pupil-y', `${pupil.offsetTop + pageYOffset}px`);
-}
+        const x2 = e.clientX;
+        const y2 = e.clientY;
 
-document.addEventListener('mousemove', animate)
+        const distance = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
+
+        console.log(`Расстояние между курсором и зрачком: ${distance}px,
+        	Координаты курсора мыши: ${e.clientX}px ${e.clientY}px`);
+
+        return distance;
+    }());
+
+});
