@@ -1,24 +1,39 @@
 'use strict';
 
-window.addEventListener('mousemove', e => {
+const doc = document.documentElement;
 
-    const eye = document.querySelector('.big-book__eye');
-    const pupil = document.querySelector('.big-book__pupil');
+doc.addEventListener('mousemove', e => {
+	const pupil = document.querySelector('.big-book__pupil');
+	const pupilPos = pupil.getBoundingClientRect();
 
-    (function getDistance() {
-        const pupilCoords = pupil.getBoundingClientRect();
-        const x1 = pupilCoords['left'] + (pupilCoords['width'] / 2);
-        const y1 = pupilCoords['top'] + (pupilCoords['height'] / 2);
+	const pupilCX = pupilPos.left + (pupilPos.width / 2);
+	const pupilCY = pupilPos.top + (pupilPos.height / 2);
+	
+	const rightDistance = doc.clientWidth - pupilCX;
+	const bottomDistance = doc.clientHeight - pupilCY;
+	
+	let percentX, percentY, x, y, size;
+	
+	if (e.clientX < pupilCX) {
+		percentX = (pupilCX - e.clientX) * 100 / pupilCX;
+		x = -percentX * 30 / 100 + 'px';
+	}
+	if (e.clientX > pupilCX) {
+		percentX = (e.clientX - pupilCX) * 100 / rightDistance;
+		x = percentX * 30 / 100 + 'px';
+	}
+	if (e.clientY < pupilCY) {
+		percentY = (pupilCY - e.clientY) * 100 / pupilCY;
+		y = -percentY * 30 / 100 + 'px';
+	}
+	if (e.clientY > pupilCY) {
+		percentY = (e.clientY - pupilCY) * 100 / bottomDistance;
+		y = percentY * 30 / 100 + 'px';
+	}
 
-        const x2 = e.clientX;
-        const y2 = e.clientY;
+	(percentX < 33 && percentY < 33) ? size = 3 : (percentX < 66 && percentY < 66) ? size = 2 : size = 1;
 
-        const distance = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
-
-        console.log(`Расстояние между курсором и зрачком: ${distance}px,
-        	Координаты курсора мыши: ${e.clientX}px ${e.clientY}px`);
-
-        return distance;
-    }());
-
+	pupil.style.setProperty('--pupil-x', x);
+	pupil.style.setProperty('--pupil-y', y);
+	pupil.style.setProperty('--pupil-size', size);
 });
