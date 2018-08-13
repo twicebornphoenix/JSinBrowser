@@ -14,5 +14,35 @@
 	<img src="https://preview.ibb.co/hGrZtz/office_2016_6.png" class="logo" style="top: 125px; left: 245px;">
 
 	<img src="https://cdn.icon-icons.com/icons2/494/PNG/512/trash_icon-icons.com_48207.png" alt="" id="trash_bin">
+
+	<script>
+		let movingLogo = null;
+
+		document.addEventListener('mousedown', e => {
+			if (e.target.classList.contains('logo')) {
+				movingLogo = e.target;
+			}
+		});
+
+		document.addEventListener('mousemove', e => {
+			if (movingLogo) {
+				e.preventDefault();
+				movingLogo.style.left = `${e.pageX}px`;
+				movingLogo.style.top = `${e.pageY}px`;
+				movingLogo.classList.add('moving');
+			}
+		});
+
+		document.addEventListener('mouseup', e => {
+			if (movingLogo) {
+				const busket = document.elementFromPoint(e.clientX, e.clientY)
+					.closest('#trash_bin');
+					if (busket) {
+						movingLogo.style.display = 'none';
+						movingLogo.classList.remove('moving');
+					}
+			}
+		});
+	</script>
 </body>
 </html>
