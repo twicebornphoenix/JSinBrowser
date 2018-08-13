@@ -19,19 +19,25 @@
 		const bull = document.querySelector('.block');
 		const message = document.querySelector('.message');
 
-		txtarea.addEventListener('focus', e => {
+		txtarea.onfocus = function() {
 			bull.classList.add('active');
 			message.classList.remove('view');
-		});
-		txtarea.addEventListener('blur', e => {
+		}
+
+		txtarea.onblur = function() {
 			bull.classList.remove('active');
-			message.classList.remove('view');
-		});
+			message.classList.remove('view')
+		}	
 
 		txtarea.addEventListener('keydown', debounce(() => {
 			bull.classList.remove('active');
 			message.classList.add('view');
 		}, 2000))
+
+		txtarea.addEventListener('keydown', e => {
+			bull.classList.add('active');
+			message.classList.remove('view');
+		})
 
 		function debounce(callback, delay) {
 			let timeout;
