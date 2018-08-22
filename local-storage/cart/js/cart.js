@@ -44,9 +44,9 @@ function setColors(e) {
 function setSelectedInputs(item) {
     const inputs = item.querySelectorAll('input');
     if (localStorage.item) {
-    	let x = document.querySelector(`#${localStorage.item}`);
-    	console.log(x)
-    	x.setAttribute('checked', true);
+        let x = document.querySelector(`#${localStorage.item}`);
+        console.log(x)
+        x.setAttribute('checked', true);
     }
     inputs.forEach(input => {
         input.addEventListener('click', function(e) {

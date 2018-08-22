@@ -24,7 +24,7 @@ function setCurrentCounter() {
 function changeValue(e) {
     counter.textContent = checkTarget(e);
     let user = new User(1, index);
-    
+
     localStorage.setItem('1', JSON.stringify(user));
 }
 
