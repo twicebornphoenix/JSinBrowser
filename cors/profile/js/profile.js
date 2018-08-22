@@ -14,8 +14,16 @@ function getData(url) {
 }
 
 function parseData(data) {
-	for (let chunck in data) {
+	const mainInfo = document.querySelector('.firstinfo');
+	for (const chunck in data) {
+		if (chunck === 'id') {
+			getData(`https://neto-api.herokuapp.com/profile/${data[chunck]}/technologies`)
+					.then(parseData);
+				} else {
+		const el = document.querySelector(`[data-${chunck}]`);
 		console.log(data[chunck])
+		// if (el.tagName !== 'IMG') el.textContent = data[chunck];
+	}
 	}
 }
 
