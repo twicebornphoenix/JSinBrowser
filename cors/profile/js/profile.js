@@ -1,35 +1,28 @@
 'use strict';
 
-const profileUrl = 'https://neto-api.herokuapp.com/profile/me';
+const url = 'https://neto-api.herokuapp.com/profile/me';
 
-function setAttrs(profile) {
-	for(let prop in profile) {
-		if (prop === 'id') loadData(`https://neto-api.herokuapp.com/profile/${profile.id}/technologies`); 
-		let elem = document.querySelector(`[data-${prop}]`);
-		console.log(elem, prop)
-		if (elem.tagName === 'IMG') {
-			elem.src = profile[`${prop}`]
-		} else {
-			elem.textContent = profile[`${prop}`]
-		}
+function getData(url) {
+	const funcName = randomName();
+	return new Promise((success, fail) => {
+		window[funcName] = success;
+
+		const script = document.createElement('script');
+		script.src = `${url}?callback=${funcName}`;
+		document.body.appendChild(script);
+	});
+}
+
+function parseData(data) {
+	for (let chunck in data) {
+		console.log(data[chunck])
 	}
 }
 
-function loadData(url) {
-    const functionName = randomName();
-
-    return new Promise((done, fail) => {
-        window[functionName] = done;
-
-        const script = document.createElement('script');
-        script.src = `${url}?jsonp=${functionName}`;
-        document.body.appendChild(script);
-    });
-}
-
 function randomName() {
-	return `ave${Math.round(Math.random() * 10000)}`;
+	const rawName = (Math.random() * 100).toString(36);
+	return isNaN(rawName.slice(4)[0]) ? rawName.slice(4) : randomName();
 }
 
-window.addEventListener('load', () => loadData(profileUrl)
-		.then(setAttrs));
+getData(url)
+	.then(parseData);
