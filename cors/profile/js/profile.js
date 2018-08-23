@@ -9,6 +9,7 @@ function getData(url) {
         //привязываем выполнение функции при успешном исходе
         window[funcName] = success;
         //создаём элемент script, присваиваем ему ссылку с jsonp и помещаем в body
+        // const script = document.scripts[0].cloneNode();
         const script = document.createElement('script');
         script.src = `${url}?callback=${funcName}`;
         document.body.appendChild(script);
