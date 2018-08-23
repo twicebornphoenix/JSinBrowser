@@ -18,6 +18,8 @@ function getData(url) {
 
 function parseData(data) {
     const mainInfo = document.querySelector('.firstinfo');
+    const badges = document.querySelector('.badgescard');
+    const content = document.querySelector('.content');
     //обрабатываем полученные данные
     for (const chunck in data) {
         if (chunck === 'id') {
@@ -25,10 +27,20 @@ function parseData(data) {
                 .then(parseData);
         } else {
             const el = document.querySelector(`[data-${chunck}]`);
-            console.log(data[chunck])
-            // if (el.tagName !== 'IMG') el.textContent = data[chunck];
+            if (el !== null) {
+            	if (el.tagName === 'IMG') {
+            		el.src = data[chunck]
+            	} else {
+            		el.textContent = data[chunck]
+            	}
+            } else {
+            		const tech = document.createElement('span');
+            		tech.classList.add('devicons', `devicons-${data[chunck]}`);
+            		badges.appendChild(tech);
+            }
         }
     }
+   content.style.display = '';
 }
 
 function randomName() {
