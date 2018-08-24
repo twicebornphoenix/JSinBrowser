@@ -17,37 +17,50 @@ function getData(url) {
 }
 
 function parseData(data) {
-	for (const chunk in data) {
-		const el = document.querySelector(`[data-${chunk}]`);
-		switch (chunk) {
-			case 'id': console.log('id');
-				break;
-			case 'rating': console.log('rating');
-				break;
-			case 'votes': console.log('vote');
-				break;
-			case 'total': console.log('total');
-				break;
-			case 'consumers': {
-				const fragment = document.createDocumentFragment();
-				for (let i = 0; i < 4; i++) {
-					const el = document.createElement('img');
-					el.src = data[chunk][i]['pic'];
-					el.title = data[chunk][i]['name'];
-					fragment.append(el);
-				}
-				document.querySelector(`[data-${chunk}]`).appendChild(fragment);
-			}
-				break;
-			default: {
-				if (el.classList.contains('cover')) {
-					el.style.background = `url(${data[chunk]})`;
-				} else {
-					el.textContent = data[chunk];
-				}
-			}
-		}
-	}
+    for (const chunk in data) {
+        const el = document.querySelector(`[data-${chunk}]`);
+        switch (chunk) {
+            case 'id':
+                break;
+            case 'rating':
+                {
+                    document.querySelector(`[data-${chunk}]`).textContent = data[chunk].toFixed(2);
+                    const starWidth = (data[chunk].toFixed(2) / 10) * 100;
+                    document.querySelector('[data-star]').style.width = starWidth + 'px';
+                }
+                break;
+            case 'votes':
+                document.querySelector(`[data-${chunk}]`).textContent = `(${data[chunk]} оценок)`;
+                break;
+            case 'total':
+                {
+                    const el = document.createElement('span');
+                    el.textContent = `(+${data['total'] - data['consumers'].length})`;
+                    document.querySelector(`[data-consumers]`).appendChild(el);
+                }
+                break;
+            case 'consumers':
+                {
+                    const fragment = document.createDocumentFragment();
+                    for (let i = 0; i < data['consumers'].length; i++) {
+                        const el = document.createElement('img');
+                        el.src = data[chunk][i]['pic'];
+                        el.title = data[chunk][i]['name'];
+                        fragment.append(el);
+                    }
+                    document.querySelector(`[data-${chunk}]`).appendChild(fragment);
+                }
+                break;
+            default:
+                {
+                    if (el.classList.contains('cover')) {
+                        el.style.background = `url(${data[chunk]})`;
+                    } else {
+                        el.textContent = data[chunk];
+                    }
+                }
+        }
+    }
 }
 
 function randomName() {
@@ -58,6 +71,6 @@ function randomName() {
 getData(urlRecipe)
     .then(parseData);
 getData(urlRating)
-		.then(parseData);
+    .then(parseData);
 getData(urlConsumers)
-		.then(parseData);
+    .then(parseData);
