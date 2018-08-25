@@ -29,36 +29,20 @@ document.addEventListener('DOMContentLoaded', function() {
     signUp.addEventListener('submit', e => {
         e.preventDefault();
 
-        // const userMail = signUp.elements[0];
-        // const userPass = signUp.elements[1];
-        // const userPassCheck = signUp.elements[2];
-        // const userName = signUp.elements[3];
-        // const formData = new FormData();
-        // Array.from(signUp.elements).forEach(el => {
-        // 	if (el.id) {
-        // 		formData.append(el.name, el.value);
-        // 	}
-        // });
-
-        // formData.append(userMail.name, userMail.value);
-        // formData.append(userPass.name, userPass.value);
-        // formData.append(userPassCheck.name, userPassCheck.value);
-        // formData.append(userName.name, userName.value);
-
-        // let dataForm = {};
-
-        // for (const [k, y] of formData) {
-        // 	dataForm[k] = y;
-        // }
-
-        // dataForm[userMail.name] = userMail.value;
-        // dataForm[userPass.name] = userPass.value;
-        // dataForm[userPassCheck.name] = userPassCheck.value;
-        // dataForm[userName.name] = userName.value;
+        const userMail = signUp.elements[0];
+        const userPass = signUp.elements[1];
+        const userPassCheck = signUp.elements[2];
+        const userName = signUp.elements[3];
+        const dataObj = [];
+        Array.from(signUp.elements).forEach(el => {
+            if (el.id) {
+                dataObj[el.name] = el.value;
+            }
+        });
 
         const rqst = new XMLHttpRequest();
         rqst.open('POST', 'https://neto-api.herokuapp.com/signup');
-        rqst.send(formData);
+        rqst.send(dataObj);
         rqst.addEventListener('load', e => {
             try {
                 var result = JSON.parse(rqst.responseText);
@@ -68,14 +52,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 outputSUp.textContent = e.message;
             }
         });
-
-        // fetch('https://neto-api.herokuapp.com/signup', {
-        // 	body: formData,
-        // 	method: 'POST'
-        // })
-        // .then(res => res.json())
-        // .then(data => {
-        // 	data.error ? outputSUp.textContent = data.message : outputSUp.textContent = 'Пользователь зарегистрирован';
-        // });
     });
 });
