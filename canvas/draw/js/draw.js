@@ -1,80 +1,43 @@
 'use strict';
+const cnvs = document.querySelector('#draw');
+const cntxt = cnvs.getContext('2d');
 
-const canvas = document.querySelector('#draw');
-const ctx = canvas.getContext('2d');
-
-canvas.style.display = 'block';
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let isActive = false;
+let isDrawing = false, brushSizeCur = 100, brushSizePrev, progress = 0;
 
 function clearSize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    cnvs.width = window.innerWidth; cnvs.height = window.innerHeight;
+    cntxt.clearRect(0, 0, cnvs.width, cnvs.height);
 }
 
-function changeHSL(e) {
-    const startHSL = 0;
-    const endHSL = 359;
-    let curHSL = 0;
-
-    e.shiftKey ? curHSL-- : curHSL++;
-
-    if (curHSL > 359) {
-        curHSL = 0;
-    } else if (curHSL < 0) {
-        curHSL = 359;
-    }
-
-    return curHSL;
-}
-
-function changeSize() {
-    const minSize = 5;
-    const maxSize = 100;
-    let curSize = 0;
-
-    if (maxSize > curSize) {
-        curSize++;
-    } else {
-        curSize--;
-    }
-    if (curSize === 100) {
-        maxSize = 5;
-    }
-    if (curSize === 5) {
-        maxSize = 100;
-    }
-
-    return curSize;
+function startDrawing(e) {
+    isDrawing = true; cntxt.beginPath(); cntxt.moveTo(e.clientX, e.clientY);
 }
 
 function draw(e) {
-    if (isActive) {
-    	let x = e.clientX;
-    let y = e.clientY;
-    let curHSL = changeHSL(e);
-    let curSize = changeSize()
-    ctx.lineJoin = 'round';
-    ctx.lineCap = 'round';
+    cntxt.lineJoin = 'round'; cntxt.lineCap = 'round';
 
-    ctx.beginPath();
-    ctx.lineTo(x, y);
-    ctx.strokeStyle = `hsl(${curHSL}, 100%, 50%)`;
-    ctx.lineWidth = curSize;
-    ctx.stroke();
-}
+    if (isDrawing) {
+        cntxt.strokeStyle = `hsl(${progress}, 100%, 50%)`;
+        cntxt.lineTo(e.clientX, e.clientY);
+        cntxt.lineWidth = brushSizeCur; cntxt.stroke();
+    }
+    ++progress > 359 ? progress = 0 : progress = progress;    
+    
+    if (brushSizeCur === 100 || brushSizePrev > brushSizeCur) {
+        brushSizePrev = brushSizeCur; brushSizeCur--;
+    }
+    if (brushSizeCur === 5 || brushSizePrev < brushSizeCur) {
+        brushSizePrev = brushSizeCur; brushSizeCur++;
+    }
 }
 
+function stopDrawing() {
+    isDrawing = false;
+}
+
+window.addEventListener('mouseup', stopDrawing);
+window.addEventListener('load', clearSize);
 window.addEventListener('resize', clearSize);
-canvas.addEventListener('dblclick', clearSize);
-canvas.addEventListener('mousemove', draw)
-canvas.addEventListener('mousedown', () => {
-    isActive = true;
-});
-canvas.addEventListener('mouseup', () => {
-    isActive = false;
-})
+window.addEventListener('mousedown', startDrawing);
+cnvs.addEventListener('dblclick', clearSize);
+cnvs.addEventListener('mousemove', draw);
