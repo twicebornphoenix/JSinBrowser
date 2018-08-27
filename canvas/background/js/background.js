@@ -1,11 +1,15 @@
 'use strict';
 
-const cnvs = document.querySelector('#wall');
-const cntxt = cnvs.getContext('2d');
 
-cntxt.width = window.innerWidth;
-cntxt.height = window.innerHeight;
+const maxSize = 0.6;
+const minSize = 0.1;
+const maxAmount = 200;
+const minAmount = 50;
+const widthStrokePw = 5;
+const figuresColor = 'FFFFFF';
 
+
+const figuresArray = ['Circle', 'Cross'];
 const timeFunctions = [
     function nextPoint(x, y, time) {
         return {
@@ -21,27 +25,74 @@ const timeFunctions = [
     }
 ];
 
+
+class Engine {
+	constructor() {
+
+	}
+	static getRandomValue(max, min) {
+        return Math.random() * (max - min) + min;
+	}
+	static getFiguresAmount() {
+		const amount = Math.round(Engine.getRandomValue(maxAmount, minAmount));
+		return ( amount % 2 === 0 ) ? amount : amount - 1;
+	}
+	static createFigures(amount, context) {
+		let emptyArr = new Array(amount);
+		
+		emptyArr.fill(el => '.').forEach((el, i, arr) => {
+				const name = ((i + 1) > arr.length / 2) ? figuresArray[0] : figuresArray[1];
+				const position = Engine.getPosition();
+				const size = Engine.getRandomValue(maxSize, minSize);
+				const func = timeFunctions[Engine.getRandomValue(timeFunctions.length - 1, 0)];
+				const figure = `new ${name}(${position.x}, ${position.y}, ${size}, ${func})`;
+				figure.draw(context);
+		});
+	}
+	static getPosition() {
+		return {x: Engine.getRandomValue(window.innerWidth, 0),
+						y: Engine.getRandomValue(window.innerHeight, 0)}
+	}
+	init() {
+		const cnvs = document.querySelector('#wall');
+		const cntxt = cnvs.getContext('2d');
+		
+		cntxt.width = window.innerWidth;
+		cntxt.height = window.innerHeight;
+		
+		const amount = this.getFiguresAmount();
+		Engine.createFigures(amount, context);
+	}
+}
+
 class Figure {
-    contructor() {
-        this.x = x;
-        this.y = y;
-        this.max, this.min;
-        this.timeFunc = timeFunctions[Math.random() * (2 - 1) + 1]; 
-    }
-    get randomValue() {
-    	return Math.random() * (max - min) + min;
-    	
-    }
-    set dataForRandom(value) {
-    	let max = value[0]
-    	let min = value[1]
-    	randomValue(max, min);
+    constructor(x, y, z, f) {
+    	this.x = x;
+    	this.y = y;
+    	this.size = z;
+    	this.timeFunc = f;
     }
 }
 
-const obj = new Figure(50, 90);
-obj.valueForRandom = [0.6, 0.1];
-let x = obj.randomSize
+class Cross extends Figure {
+	constructor(z) {
+		super();
+		this.size = z * 20;
+	}
+	draw(cntxt) {
 
+	}
+}
 
-console.log(x)
+class Circle extends Figure {
+	constructor(z) {
+		super();
+		this.radius = z * 12;
+	}
+	draw(cntxt) {
+		contxt.arc()
+	}
+}
+
+const engine = new Engine();
+engine.init();
