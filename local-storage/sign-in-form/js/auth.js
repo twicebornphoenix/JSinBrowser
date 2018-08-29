@@ -11,9 +11,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const xhr = new XMLHttpRequest();
 
         xhr.open('POST', 'https://neto-api.herokuapp.com/signin');
+        
         const formData = new FormData(signIn);
-        xhr.send(formData);
+        const objectData = {};
+        formData.forEach((k, v) => objectData[v] = k);
 
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.send(JSON.stringify(objectData));
         xhr.addEventListener('load', function() {
             try {
                 let result = JSON.parse(xhr.responseText);
@@ -29,20 +34,16 @@ document.addEventListener('DOMContentLoaded', function() {
     signUp.addEventListener('submit', e => {
         e.preventDefault();
 
-        const userMail = signUp.elements[0];
-        const userPass = signUp.elements[1];
-        const userPassCheck = signUp.elements[2];
-        const userName = signUp.elements[3];
-        const dataObj = [];
-        Array.from(signUp.elements).forEach(el => {
-            if (el.id) {
-                dataObj[el.name] = el.value;
-            }
-        });
-
         const rqst = new XMLHttpRequest();
         rqst.open('POST', 'https://neto-api.herokuapp.com/signup');
-        rqst.send(dataObj);
+        
+        const forma = new FormData(signUp);
+        const objFromForm = {};
+        forma.forEach((v, k) => objFromForm[k] = v);
+
+        rqst.setRequestHeader('Content-Type', 'application/json')
+
+        rqst.send(JSON.stringify(objFromForm));
         rqst.addEventListener('load', e => {
             try {
                 var result = JSON.parse(rqst.responseText);
