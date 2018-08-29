@@ -1,5 +1,5 @@
 'use strict'
-//константы, с которыми будем работать
+
 const form = document.querySelector('.form-inline');
 const select = form.querySelector('select');
 const showSheme = form.querySelector('#btnSeatMap');
@@ -11,17 +11,11 @@ const total = document.querySelector('#totalPax');
 const adult = document.querySelector('#totalAdult');
 const half = document.querySelector('#totalHalf');
 
-//переменная с полученными данными
 let currentData;
-
-//переменная с массивом текущих мест
 let currentPlaces;
-
-//деактивируем кнопки Заполнить и Очисить
 setFull.disabled = true;
 setEmpty.disabled = true;
 
-//функция получения данных с сервера
 function getData(e) {
     const id = e ? e.target.value : 'a319';
     console.log('Отправка запроса...')
@@ -37,14 +31,8 @@ function getData(e) {
         .catch(error => console.error(`Произошла ошибка - ${error.message}`));
 }
 
-//функция применения полученных данных
 function setData(e) {
     e.preventDefault();
-    console.log('Данные готовы к использованию', currentData);
-
-    console.log('Объект ряда', getRowObj(currentData));
-
-    //Создаём ряды
 
     const rows = currentData.scheme.reduce((f, row, i) => {
         f.append(getRow(getRowObj(row, i)));
@@ -52,11 +40,9 @@ function setData(e) {
         return f;
     }, document.createDocumentFragment());
 
-    //активируем кнопки Заполнить и Очистить
     setFull.disabled = false;
     setEmpty.disabled = false;
 
-    //прописываем название самолёта и количества пассажиров
     let passengerWordEnd;
     switch (currentData.passengers % 10) {
         case 1:
@@ -72,15 +58,14 @@ function setData(e) {
     }
     mapTitle.textContent = `${currentData.title} (${currentData.passengers} пассажир${passengerWordEnd})`;
 
-    //выводим схему самолёта в интерфейс
     Array.from(schemeArea.children).forEach(child => child.remove());
     schemeArea.append(rows);
-    currentPlaces = Array.from(document.querySelectorAll('.seat'));
-    currentPlaces.forEach(place => place.addEventListener('click', e =>
-        manageSeatClasses(e, 'toggle', 'adult')));
+    // currentPlaces = Array.from(document.querySelectorAll('.seat'));
+    // currentPlaces.forEach(place => place.addEventListener('click', e =>
+    //     manageSeatClasses(e, true, 'adult')));
+    schemeArea.addEventListener('click', e => manageSeatClasses(e, null, ['adult', 'half']))
 }
 
-//функция определения статуса места в ряду
 function getLetter(row, i) {
     switch (row) {
         case 6:
@@ -92,7 +77,6 @@ function getLetter(row, i) {
     }
 }
 
-//функция создания объекта ряда
 function getRowObj(row, i) {
     return {
         tag: 'div',
@@ -174,7 +158,6 @@ function getRowObj(row, i) {
     }
 }
 
-//функция создания ряда
 function getRow(block) {
     if (Array.isArray(block)) {
         return block.reduce((f, el) => {
@@ -195,39 +178,68 @@ function getRow(block) {
     return el;
 }
 
-//функция подсчёта занятых мест
 function getAmountPlaces() {
-	adult.textContent = document.querySelectorAll('.adult').length;
-	half.textContent = document.querySelectorAll('.half').length;
-	total.textContent = +adult.textContent + +half.textContent;
+    adult.textContent = document.querySelectorAll('.adult').length;
+    half.textContent = document.querySelectorAll('.half').length;
+    total.textContent = +adult.textContent + +half.textContent;
 }
 
-//устанавливаем обработчики событий 
 form.addEventListener('change', getData);
 showSheme.addEventListener('click', setData);
-setFull.addEventListener('click', e => manageSeatClasses(e, true, 'adult'));
+setFull.addEventListener('click', e => manageSeatClasses(e, true, ['adult']));
 setEmpty.addEventListener('click', e => manageSeatClasses(e, false, ['adult', 'half']));
 
 function manageSeatClasses(e, op, cls) {
     e.preventDefault();
+    currentPlaces = Array.from(document.querySelectorAll('.seat'));
 
-    if (e.target.classList.contains('seat-label') && op === 'toggle') !e.altKey ?
-        e.target.parentNode.classList.toggle(cls) :
-        e.target.parentNode.classList.toggle('half');
-    if (e.target.classList.contains('seat') && op === 'toggle') !e.altKey ?
-        e.target.classList.toggle(cls) :
-        e.target.classList.toggle('half');
-    if (op !== 'toggle') {
+    if (op !== null) {
         currentPlaces.forEach(seat => {
-            op ? seat.classList.add(cls) : seat.classList.remove(...cls);
+            op ? seat.classList.add(...cls) : seat.classList.remove(...cls);
         });
+    } else {
+
+        if (e.target.classList.contains('seat-label')) {
+
+            if (!e.altKey) {
+
+                if (e.target.parentNode.classList.contains(cls[1])) {
+                    e.target.parentNode.classList.toggle(cls[0])
+                    e.target.parentNode.classList.remove(cls[1]);
+                } else {
+                    e.target.parentNode.classList.toggle(cls[0])
+                }
+            } else {
+
+                if (e.target.parentNode.classList.contains(cls[0])) {
+                    e.target.parentNode.classList.remove(cls[0]);
+                    e.target.parentNode.classList.toggle(cls[1]);
+                } else {
+                    e.target.parentNode.classList.toggle(cls[1]);
+                }
+            }
+        } else if (e.target.classList.contains('seat')) {
+            if (!e.altKey) {
+                if (e.target.classList.contains(cls[1])) {
+                    e.target.classList.remove(cls[1]);
+                    e.target.classList.toggle(cls[0]);
+                } else {
+                    e.target.classList.toggle(cls[0]);
+                }
+            } else {
+                if (e.target.classList.contains(cls[0])) {
+                    e.target.classList.remove(cls[0]);
+                    e.target.classList.toggle(cls[1]);
+                } else {
+                    e.target.classList.toggle(cls[1]);
+                }
+            }
+        }
     }
+
     getAmountPlaces();
 }
 
-console.log('Отправка запроса...');
-
-//отправляем запрос на сервер при открытии страницы
 fetch('https://neto-api.herokuapp.com/plane/a319')
     .then(res => {
         console.log('Обработка данных...')
