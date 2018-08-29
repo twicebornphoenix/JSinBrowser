@@ -1,98 +1,123 @@
 'use strict';
 
-
-const maxSize = 0.6;
-const minSize = 0.1;
-const maxAmount = 200;
-const minAmount = 50;
-const widthStrokePw = 5;
-const figuresColor = 'FFFFFF';
-
-
-const figuresArray = ['Circle', 'Cross'];
-const timeFunctions = [
-    function nextPoint(x, y, time) {
-        return {
-            x: x + Math.sin((50 + x + (time / 10)) / 100) * 3,
-            y: y + Math.sin((45 + x + (time / 10)) / 100) * 4
-        };
-    },
-    function nextPoint(x, y, time) {
-        return {
-            x: x + Math.sin((x + (time / 10)) / 100) * 5,
-            y: y + Math.sin((10 + x + (time / 10)) / 100) * 2
-        }
+class AnimatedFigure {
+    constructor(ops, w, h) {
+        this.width = w;
+        this.height = h;
+        const options = ops;
     }
-];
 
+    static getRandomValue(max, min) {
+        return Math.random() * (max - min + 1) + min;
+    }
 
-class Engine {
-	constructor() {
+    static getFigureAmount() {
+        let amount = this.getRandomValue(options.maxAmount, options.minAmount);
+        const delta = amount % options.types.length;
+        if (delta !== 0) amount -= delta;
 
-	}
-	static getRandomValue(max, min) {
-        return Math.random() * (max - min) + min;
-	}
-	static getFiguresAmount() {
-		const amount = Math.round(Engine.getRandomValue(maxAmount, minAmount));
-		return ( amount % 2 === 0 ) ? amount : amount - 1;
-	}
-	static createFigures(amount, context) {
-		let emptyArr = new Array(amount);
-		
-		emptyArr.fill(el => '.').forEach((el, i, arr) => {
-				const name = ((i + 1) > arr.length / 2) ? figuresArray[0] : figuresArray[1];
-				const position = Engine.getPosition();
-				const size = Engine.getRandomValue(maxSize, minSize);
-				const func = timeFunctions[Engine.getRandomValue(timeFunctions.length - 1, 0)];
-				const figure = `new ${name}(${position.x}, ${position.y}, ${size}, ${func})`;
-				figure.draw(context);
-		});
-	}
-	static getPosition() {
-		return {x: Engine.getRandomValue(window.innerWidth, 0),
-						y: Engine.getRandomValue(window.innerHeight, 0)}
-	}
-	init() {
-		const cnvs = document.querySelector('#wall');
-		const cntxt = cnvs.getContext('2d');
-		
-		cntxt.width = window.innerWidth;
-		cntxt.height = window.innerHeight;
-		
-		const amount = this.getFiguresAmount();
-		Engine.createFigures(amount, context);
-	}
+        return amount;
+    }
+
+    static createFigures(classes, amount) {
+        const classesAmount = classes.length;
+
+        for (let i = 1; i <= amount; i++) {
+        	let index = i;
+        	
+            if (index < (amount / classesAmount)) {
+                index = 0;
+            } else if (index === (amount / classesAmount)) {
+            	index = 0;
+            } else {
+                index = Math.ceil(index / (amount / classesAmount)) - 1;
+            }
+            const x = this.getRandomValue(root.clientWidth, 0);
+            const y = this.getRandomValue(root.clientHeight, 0);
+            const size = this.getRandomValue(options.maxSize, options.minSize);
+            const figure = new classes[index](x, y, size);
+
+            // return figure;
+        }
+
+    }
+
+    init() {
+        const canvas = document.querySelector('#wall');
+        const context = canvas.getContext('2d');
+
+        const amount = AnimatedFigure.getFigureAmount();
+        const classes = options.types;
+        const figure = AnimatedFigure.createFigures(classes, amount);
+
+        canvas.width = this.width;
+        canvas.height = this.height;
+
+        // figure.draw(context)
+    }
 }
 
 class Figure {
-    constructor(x, y, z, f) {
-    	this.x = x;
-    	this.y = y;
-    	this.size = z;
-    	this.timeFunc = f;
+    constructor(x, y, sz) {
+        this.x = x;
+        this.y = y;
+        this.size = sz;
+    }
+}
+
+class Circle extends Figure {
+    constructor(x, y, sz) {
+        super(x, y);
+        this.radius = sz * 12;
+    }
+
+    draw(ctxt) {
+        ctxt.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+        ctxt.stroke();
     }
 }
 
 class Cross extends Figure {
-	constructor(z) {
-		super();
-		this.size = z * 20;
-	}
-	draw(cntxt) {
+    constructor(x, y, sz) {
+        super(x, y);
+        this.size = sz * 20;
+        this.xC = this.size / 2 + x;
+        this.yC = this.size / 2 + y;
+    }
 
-	}
+    draw(ctxt) {
+        ctxt.moveTo(this.x, this.y);
+        ctxt.lineTo(this.x + this.size, this.y + this.size);
+        ctxt.moveTo(this.x + this.size, this.y);
+        ctxt.lineTo(this.x, this.y + this.size)
+        ctxt.stroke();
+    }
 }
 
-class Circle extends Figure {
-	constructor(z) {
-		super();
-		this.radius = z * 12;
-	}
-	draw(cntxt) {
-		contxt.arc()
-	}
+const options = {
+    types: [Circle, Cross],
+    maxSize: 0.6,
+    minSize: 0.1,
+    maxAmount: 200,
+    minAmount: 50,
+    widthStrokePw: 5,
+    figuresColor: '#ffffff',
+    timeFuncs: [
+        function nextPoint(x, y, time) {
+            return {
+                x: x + Math.sin((50 + x + (time / 10)) / 100) * 3,
+                y: y + Math.sin((45 + x + (time / 10)) / 100) * 4
+            };
+        },
+        function nextPoint(x, y, time) {
+            return {
+                x: x + Math.sin((x + (time / 10)) / 100) * 5,
+                y: y + Math.sin((10 + x + (time / 10)) / 100) * 2
+            }
+        }
+    ]
 }
 
-const engine = new Engine();
-engine.init();
+const root = document.documentElement;
+const animBg = new AnimatedFigure(options, root.clientWidth, root.clientHeight);
+animBg.init();
