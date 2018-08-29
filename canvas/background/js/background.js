@@ -21,6 +21,7 @@ class AnimatedFigure {
 
     static createFigures(classes, amount) {
         const classesAmount = classes.length;
+        const figures = classes.map(cls => []);
 
         for (let i = 1; i <= amount; i++) {
         	let index = i;
@@ -28,18 +29,20 @@ class AnimatedFigure {
             if (index < (amount / classesAmount)) {
                 index = 0;
             } else if (index === (amount / classesAmount)) {
+            	console.log('hi')
             	index = 0;
             } else {
-                index = Math.ceil(index / (amount / classesAmount)) - 1;
+                index = Math.ceil(index / (amount / classesAmount)) -1;
             }
             const x = this.getRandomValue(root.clientWidth, 0);
             const y = this.getRandomValue(root.clientHeight, 0);
             const size = this.getRandomValue(options.maxSize, options.minSize);
             const figure = new classes[index](x, y, size);
 
-            // return figure;
+            figures[index].push(figure)
         }
 
+        return figures;
     }
 
     init() {
@@ -48,12 +51,16 @@ class AnimatedFigure {
 
         const amount = AnimatedFigure.getFigureAmount();
         const classes = options.types;
-        const figure = AnimatedFigure.createFigures(classes, amount);
+        const figures = AnimatedFigure.createFigures(classes, amount);
 
         canvas.width = this.width;
         canvas.height = this.height;
 
-        // figure.draw(context)
+        context.strokeStyle = options.figuresColor;
+        
+        figures.forEach(cls => {
+        	cls.forEach(f => f.draw(context));
+        });	
     }
 }
 
@@ -62,11 +69,12 @@ class Figure {
         this.x = x;
         this.y = y;
         this.size = sz;
+        this.stroke = sz * 5;
     }
 }
 
 class Circle extends Figure {
-    constructor(x, y, sz) {
+    constructor(x, y, sz, stroke) {
         super(x, y);
         this.radius = sz * 12;
     }
@@ -100,7 +108,6 @@ const options = {
     minSize: 0.1,
     maxAmount: 200,
     minAmount: 50,
-    widthStrokePw: 5,
     figuresColor: '#ffffff',
     timeFuncs: [
         function nextPoint(x, y, time) {
