@@ -60,9 +60,6 @@ function setData(e) {
 
     Array.from(schemeArea.children).forEach(child => child.remove());
     schemeArea.append(rows);
-    // currentPlaces = Array.from(document.querySelectorAll('.seat'));
-    // currentPlaces.forEach(place => place.addEventListener('click', e =>
-    //     manageSeatClasses(e, true, 'adult')));
     schemeArea.addEventListener('click', e => manageSeatClasses(e, null, ['adult', 'half']))
 }
 
@@ -192,52 +189,57 @@ setEmpty.addEventListener('click', e => manageSeatClasses(e, false, ['adult', 'h
 function manageSeatClasses(e, op, cls) {
     e.preventDefault();
     currentPlaces = Array.from(document.querySelectorAll('.seat'));
+    const mainSeat = e.target.parentNode.classList;
+    const mainSeatDbl = e.target.classList;
 
     if (op !== null) {
+
         currentPlaces.forEach(seat => {
-            op ? seat.classList.add(...cls) : seat.classList.remove(...cls);
+            if (op) {
+                seat.classList.remove('half');
+                seat.classList.add(...cls);
+            } else {
+                seat.classList.remove(...cls);
+            }
         });
+
     } else {
 
         if (e.target.classList.contains('seat-label')) {
 
             if (!e.altKey) {
 
-                if (e.target.parentNode.classList.contains(cls[1])) {
-                    e.target.parentNode.classList.toggle(cls[0])
-                    e.target.parentNode.classList.remove(cls[1]);
-                } else {
-                    e.target.parentNode.classList.toggle(cls[0])
-                }
+                mainSeat.contains(cls[1]) ?
+                    changeClass(mainSeat, cls[1], cls[0]) : mainSeat.toggle(cls[0]);
+
             } else {
 
-                if (e.target.parentNode.classList.contains(cls[0])) {
-                    e.target.parentNode.classList.remove(cls[0]);
-                    e.target.parentNode.classList.toggle(cls[1]);
-                } else {
-                    e.target.parentNode.classList.toggle(cls[1]);
-                }
+                mainSeat.contains(cls[0]) ?
+                    changeClass(mainSeat, cls[0], cls[1]) : mainSeat.toggle(cls[1])
+
             }
+
         } else if (e.target.classList.contains('seat')) {
+
             if (!e.altKey) {
-                if (e.target.classList.contains(cls[1])) {
-                    e.target.classList.remove(cls[1]);
-                    e.target.classList.toggle(cls[0]);
-                } else {
-                    e.target.classList.toggle(cls[0]);
-                }
+
+                mainSeatDbl.contains(cls[1]) ?
+                    changeClass(mainSeatDbl, cls[1], cls[0]) : mainSeatDbl.toggle(cls[0])
+
             } else {
-                if (e.target.classList.contains(cls[0])) {
-                    e.target.classList.remove(cls[0]);
-                    e.target.classList.toggle(cls[1]);
-                } else {
-                    e.target.classList.toggle(cls[1]);
-                }
+
+                mainSeatDbl.contains(cls[0]) ?
+                    changeClass(mainSeatDbl, cls[0], cls[1]) : mainSeatDbl.toggle(cls[1])
+
             }
         }
     }
-
     getAmountPlaces();
+}
+
+function changeClass(el, clsToR, clsToT) {
+    el.remove(clsToR);
+    el.toggle(clsToT);
 }
 
 fetch('https://neto-api.herokuapp.com/plane/a319')
