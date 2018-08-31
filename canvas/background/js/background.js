@@ -121,10 +121,10 @@ class Cross extends Figure {
         const figCords = this.f(this.baseCords[0], this.baseCords[1], Date.now());
 
         ctxt.beginPath(); 
-        ctxt.moveTo(this.x, this.y);
-        ctxt.lineTo(this.x + this.side, this.y + this.side); 
-        ctxt.moveTo(this.x + this.side, this.y); 
-        ctxt.lineTo(this.x, this.y + this.side);
+        ctxt.moveTo(figCords.x, figCords.y);
+        ctxt.lineTo(figCords.x + this.side, figCords.y + this.side); 
+        ctxt.moveTo(figCords.x + this.side, figCords.y); 
+        ctxt.lineTo(figCords.x, figCords.y + this.side);
         ctxt.lineWidth = this.lineW; 
         ctxt.stroke(); 
     } 
