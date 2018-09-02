@@ -25,7 +25,7 @@ const audioPlayers = document.getElementsByTagName('audio');
 const audioPlayersArr = Array.from(audioPlayers);
 
 audioPlayersArr.forEach((player, index) => {
-    player.src = middles[index];
+    player.src = middles[index]
 });
 
 pianoKeysArr.forEach(key => {
