@@ -1,10 +1,10 @@
 'use strict';
 
-const xhr = new XMLHttpRequest();
-xhr.addEventListener('load', manageNumber);
+const xhrPoolin = new XMLHttpRequest();
+xhrPoolin.addEventListener('load', manageNumber);
 setInterval(() => {
-    xhr.open('GET', 'https://neto-api.herokuapp.com/comet/pooling');
-    xhr.send()
+    xhrPoolin.open('GET', 'https://neto-api.herokuapp.com/comet/pooling');
+    xhrPoolin.send()
 }, 4000);
 
 function manageNumber(e) {
