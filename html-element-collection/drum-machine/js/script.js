@@ -17,4 +17,4 @@ drumKeysArr.forEach(drum => {
       drum.getElementsByTagName('audio')[0].play();
     }
   }
-});
+})

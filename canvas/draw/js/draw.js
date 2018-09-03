@@ -2,32 +2,43 @@
 const cnvs = document.querySelector('#draw');
 const cntxt = cnvs.getContext('2d');
 
-let isDrawing = false, brushSizeCur = 100, brushSizePrev, progress = 0;
+let isDrawing = false,
+    brushSizeCur = 100,
+    brushSizePrev, progress = 0;
 
 function clearSize() {
-    cnvs.width = window.innerWidth; cnvs.height = window.innerHeight;
+    cnvs.width = window.innerWidth;
+    cnvs.height = window.innerHeight;
     cntxt.clearRect(0, 0, cnvs.width, cnvs.height);
 }
 
 function startDrawing(e) {
-    isDrawing = true; cntxt.beginPath(); cntxt.moveTo(e.clientX, e.clientY);
+    isDrawing = true;
+    cntxt.beginPath();
+    cntxt.moveTo(e.clientX, e.clientY);
 }
 
 function draw(e) {
-    cntxt.lineJoin = 'round'; cntxt.lineCap = 'round';
-
     if (isDrawing) {
+        cntxt.lineJoin = 'round'; cntxt.lineCap = 'round';
         cntxt.strokeStyle = `hsl(${progress}, 100%, 50%)`;
+        cntxt.lineWidth = brushSizePrev;
+        
         cntxt.lineTo(e.clientX, e.clientY);
-        cntxt.lineWidth = brushSizeCur; cntxt.stroke();
-    }
-    ++progress > 359 ? progress = 0 : progress = progress;    
-    
-    if (brushSizeCur === 100 || brushSizePrev > brushSizeCur) {
-        brushSizePrev = brushSizeCur; brushSizeCur--;
-    }
-    if (brushSizeCur === 5 || brushSizePrev < brushSizeCur) {
-        brushSizePrev = brushSizeCur; brushSizeCur++;
+        cntxt.stroke();
+
+        cntxt.beginPath();
+        cntxt.moveTo(e.clientX, e.clientY);
+            
+        ++progress > 359 ? progress = 0 : progress = progress;
+
+        if (brushSizeCur === 100 || brushSizePrev > brushSizeCur) {
+            brushSizePrev = brushSizeCur; brushSizeCur--;
+        }
+
+        if (brushSizeCur === 5 || brushSizePrev < brushSizeCur) {
+            brushSizePrev = brushSizeCur; brushSizeCur++;
+        }
     }
 }
 

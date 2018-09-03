@@ -1,41 +1,27 @@
 'use strict';
+class WebS {
+    constructor(url) {
+        this.webS = new WebSocket(url);
+    }
 
-const wsNumbers = document.querySelector('.websocket').children;
+    static hideN(number) {
+        setTimeout(() => number.classList.remove('flip-it'), 2000);
+    }
 
-// const ws = new WebSocket('wss://neto-api.herokuapp.com/comet/websocket');
-// ws.addEventListener('message', e => {
-// 	Array.from(wsNumbers).forEach(number => {
-// 		if (e.data === number.textContent) {
-// 			console.log(e.data)
-// 			number.classList.add('flip-it');
-// 			setTimeout(function() {number.classList.remove('flip-it')}, 3000);
-// 		}
-// 	})
-// });
+    static showNumber(e) {
+        Array.from(document.querySelector('.websocket').children)
+            .forEach(number => {
+                if (e.data === number.textContent) {
+                    number.classList.add('flip-it');
 
-class Wsocket {
-	constructor(url, t) {
-		this.ws = new WebSocket(url);
-		this.t = t || 2000;
-	}
-	showNumber(e) {
-		Array.from(wsNumbers)
-			.forEach(number => {
-			if (e.data === number.textContent) {
-				number.classList.add('flip-it');
-				self.hideNumber(number);
-			}
-		})
-	}
-	hideNumber(number) {
-		setTimeout(function() {
-			number.classList.remove('flip-it')
-		}, this.t);
-	}
-	adListener(event) {
-		this.ws.addEventListener(event, this.showNumber)
-	}
+                    WebS.hideN(number);
+                }
+            })
+    }
+    addListener(event) {
+        this.webS.addEventListener(event, WebS.showNumber)
+    }
 }
 
-const ws = new Wsocket('wss://neto-api.herokuapp.com/comet/websocket');
-ws.adListener('message')
+const ws = new WebS('wss://neto-api.herokuapp.com/comet/websocket');
+ws.addListener('message');

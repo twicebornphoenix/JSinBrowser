@@ -28,5 +28,5 @@ function changeTab(event) {
 
 tabs.forEach(tab => tab.addEventListener('click', changeTab));
 
-request.addEventListener('load', onLoad);
+request.addEventListener('load', onLoad)
 
