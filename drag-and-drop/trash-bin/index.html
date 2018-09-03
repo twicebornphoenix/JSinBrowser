@@ -18,11 +18,17 @@
     <script>
     let isActive = false;
     let movingLogo = null;
+    let shiftX = 0;
+    let shiftY = 0;
 
     document.addEventListener('mousedown', e => {
         if (e.target.classList.contains('logo')) {
             isActive = true;
             movingLogo = e.target;
+            
+            const bounds = e.target.getBoundingClientRect();
+            shiftX = ( bounds.right - bounds.left ) / 2;
+            shiftY = ( bounds.bottom - bounds.top) / 2;
         }
     });
 
@@ -30,8 +36,8 @@
         e.preventDefault();
         if (movingLogo) {
             if (isActive) {
-                movingLogo.style.left = `${e.pageX}px`;
-                movingLogo.style.top = `${e.pageY}px`;
+                movingLogo.style.left = `${e.pageX - shiftX}px`;
+                movingLogo.style.top = `${e.pageY - shiftY}px`;
                 movingLogo.classList.add('moving');
             }
         }
