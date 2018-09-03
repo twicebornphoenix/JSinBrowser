@@ -17,6 +17,7 @@
         </div>
     </div>
     </div>
+
     <script>
     const lEye = document.querySelector('.cat_position_for_left_eye');
     const rEye = document.querySelector('.cat_position_for_right_eye');
@@ -26,7 +27,7 @@
 
     const eyeSize = lEyeCords.width;
     const eyeT = lEyeCords.top;
-    const eyeB = lEyeCords.top + eyeSize;
+    const eyeB = eyeT + eyeSize;
 
     const lEyeL = lEyeCords.left;
     const lEyeR = lEyeL + eyeSize;
@@ -39,43 +40,37 @@
     const lPupCords = lPup.getBoundingClientRect();
     const rPupCords = rPup.getBoundingClientRect();
 
-    const pupRadius = lPup.width / 2;
+    const pupRadius = lPupCords.width / 2;
+    const eyePadding = eyeSize - pupRadius;
 
     document.addEventListener('mousemove', e => {
-
         if (e.clientX < lEyeL) {
             lPup.style.left = 0 + 'px';
-        } else if (e.clientX > lEyeL + pupRadius && e.clientX < lEyeL + eyeSize - pupRadius) {
-            let pos = eyeSize - lEyeL + eyeSize - e.clientX;
-            lPup.style.left = pos - pupRadius + 'px';
-        } else if (e.clientX > lEyeL + eyeSize) {
-            lPup.style.left = 50 + '%'
-        }
+        } else if (e.clientX > (lEyeL + pupRadius) && e.clientX < (lEyeL + eyePadding)) {
 
-        if (e.clientY < eyeT) {
-            lPup.style.top = 0 + 'px';
-        } else if (e.clientY > eyeT + pupRadius && e.clientY < eyeT + eyeSize - pupRadius) {
-            let pos = eyeSize - eyeT + eyeSize - e.clientY;
-            lPup.style.top = pos - pupRadius + 'px';
-        } else if (e.clientY > eyeT + eyeSize) {
-            lPup.style.top = 50 + '%'
-        }
+            let pos = eyeSize - (lEyeR - e.clientX);
+            lPup.style.left = pos - pupRadius + 'px';
+        } else if (e.clientX > lEyeR) lPup.style.left = 50 + '%';
+
 
         if (e.clientX < rEyeL) {
             rPup.style.left = 0 + 'px';
-        } else if (e.clientX > rEyeL + pupRadius && e.clientX < rEyeL + eyeSize - pupRadius) {
-            let pos = eyeSize - rEyeL + eyeSize - e.clientX;
-            rPup.style.left = pos - pupRadius + 'px';
-        } else if (e.clientX > rEyeL + eyeSize) {
-            rPup.style.left = 50 + '%'
-        }
+        } else if (e.clientX > (rEyeL + pupRadius) && e.clientX < (rEyeL + eyePadding)) {
 
-        if (e.clientY < eyeB) {
+            let pos = eyeSize - (rEyeR - e.clientX);
+            rPup.style.left = pos - pupRadius + 'px';
+        } else if (e.clientX > rEyeR) rPup.style.left = 50 + '%';
+        
+        if (e.clientY < eyeT) {
+            lPup.style.top = 0 + 'px';
             rPup.style.top = 0 + 'px';
-        } else if (e.clientY > eyeB + pupRadius && e.clientY < eyeB + eyeSize - pupRadius) {
-            let pos = eyeSize - eyeB + eyeSize - e.clientY;
+        } else if (e.clientY > (eyeT + pupRadius) && e.clientY < (eyeT + eyePadding)) {
+
+            let pos = eyeSize - (eyeB - e.clientY);
+            lPup.style.top = pos - pupRadius + 'px';
             rPup.style.top = pos - pupRadius + 'px';
-        } else if (e.clientY > eyeB + eyeSize) {
+        } else if (e.clientY > eyeB) {
+            lPup.style.top = 50 + '%'
             rPup.style.top = 50 + '%'
         }
     });
