@@ -18,8 +18,14 @@ class TextEditor {
   registerEvents() {
     const save = throttle( this.save.bind( this ), 1000 );
     this.contentContainer.addEventListener( 'input', save );
+    this.contentContainer.addEventListener( 'dragover', this.showHint.bind( this ));
+    this.contentContainer.addEventListener( 'drop', this.loadFile.bind( this ));
   }
   loadFile( e ) {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file.type !== 'text/plain') this.load( 'Файл имеет неподходящее расширение и не может быть прочитан');
+      
   }
   readFile( file ) {
   }
@@ -27,6 +33,8 @@ class TextEditor {
     this.filenameContainer.textContent = filename;
   }
   showHint( e ) {
+    e.preventDefault();  
+    this.hintContainer.classList.add('text-editor__hint_visible');
   }
   hideHint() {
   }
