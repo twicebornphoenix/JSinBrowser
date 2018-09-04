@@ -10,8 +10,8 @@ function clearAll() {
 function changeState(event) {
 		event.preventDefault();
 		clearAll();
-		fullSize.src = this.href;
-		this.classList.add('gallery-current');
+		fullSize.src = event.currentTarget.href;
+		event.currentTarget.classList.add('gallery-current');
 	};
 
 thumbPicsArr.forEach((pic, index) => {
