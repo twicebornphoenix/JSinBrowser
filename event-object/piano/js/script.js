@@ -24,12 +24,17 @@ const pianoKeysArr = Array.from(pianoKeys);
 const audioPlayers = document.getElementsByTagName('audio');
 const audioPlayersArr = Array.from(audioPlayers);
 
-audioPlayersArr.forEach((player, index) => {
-    player.src = middles[index]
-});
 
 pianoKeysArr.forEach(key => {
-    key.addEventListener('click', function() {
+    key.addEventListener('click', function(e) {
+        
+        let mode = middles;
+        if (e.shiftKey) mode = lowers;
+        if (e.altKey) mode = highers;
+        audioPlayersArr.forEach((player, index) => {
+            player.src = mode[index]
+        });
+
         let player = key.children[0];
         if (player.paused) {
             player.play();
